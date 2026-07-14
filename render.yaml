@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: identica-citoyen
+    env: static
+    buildCommand: npm run build
+    publishPath: dist
+    routes:
+      # Route all requests to index.html for SPA routing fallback (React Router)
+      - src: /*
+        dest: /index.html
