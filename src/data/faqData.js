@@ -46,7 +46,7 @@ export const FAQ_SECTIONS = [
         id: 'S2-3',
         question: '2.3 Délais légaux de déclaration',
         keywords: ['délai', 'jour', '30', '90', 'domicile', 'hôpital', 'tardif'],
-        answer: `• Naissance en établissement de santé : 30 jours\n• Naissance à domicile : 90 jours\n• Délai complémentaire parents : +15 jours\n• Après 6 mois : jugement supplétif obligatoire`,
+        answer: `• Naissance en établissement de santé : 30 jours\n• Naissance à domicile : 90 jours\n• Délai complémentaire parents : +15 jours\n• Après 90 jours (3 mois) : jugement supplétif obligatoire`,
         isTable: true,
       },
       {

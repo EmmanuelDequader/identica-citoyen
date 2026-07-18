@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Baby, HeartCrack, ChevronLeft, Info, ChevronDown, ChevronUp, Calendar, MapPin, Building2, User } from 'lucide-react'
+import { Search, Baby, HeartCrack, ChevronLeft, ChevronDown, ChevronUp, Calendar, MapPin, Building2, User } from 'lucide-react'
 import BrandBar from '../components/BrandBar'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
@@ -341,12 +341,6 @@ export default function StatusSearch() {
 
               {/* Hint + submit */}
               <div className="bg-mist-50 border-t border-mist-100 px-6 sm:px-8 py-5 space-y-4">
-                <div className="flex items-start gap-2.5 rounded-xl bg-navy-50 p-3.5">
-                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-navy-700" />
-                  <p className="text-xs leading-relaxed text-navy-700">
-                    Le numéro de l'acte figure sur le <strong>certificat d'accouchement</strong> ou le <strong>reçu de déclaration</strong> délivré par l'établissement de santé. Sans numéro, la recherche par nom seul est possible.
-                  </p>
-                </div>
 
                 {apiError && (
                   <div className="rounded-xl bg-coral-500/10 px-4 py-3 text-sm text-coral-600 flex items-start gap-2">

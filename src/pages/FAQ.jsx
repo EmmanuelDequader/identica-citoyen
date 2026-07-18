@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { ChevronDown, ChevronRight, Search, BookOpen, Scale, AlertTriangle, Bookmark, ChevronLeft } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import BrandBar from '../components/BrandBar'
 import { FAQ_SECTIONS } from '../data/faqData'
 
@@ -91,7 +91,7 @@ function AnswerContent({ text, isTable }) {
 
 function AccordionItem({ article, isOpen, onToggle }) {
   return (
-    <div className={`rounded-xl border transition-all ${isOpen ? 'border-navy-100 shadow-sm' : 'border-mist-100'} bg-white`}>
+    <div id={`faq-${article.id}`} className={`rounded-xl border transition-all ${isOpen ? 'border-navy-100 shadow-sm' : 'border-mist-100'} bg-white`}>
       <button
         onClick={onToggle}
         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left cursor-pointer"
@@ -112,9 +112,31 @@ function AccordionItem({ article, isOpen, onToggle }) {
 
 export default function FAQ() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [search, setSearch] = useState('')
   const [openItems, setOpenItems] = useState({})
   const [openSections, setOpenSections] = useState({ S1: true })
+
+  // Gestion des ancres URL : /faq#S2-1 ouvre la section + l'article et scrolle vers lui
+  useEffect(() => {
+    const hash = location.hash?.replace('#', '')
+    if (!hash) return
+    // Trouver l'article correspondant
+    for (const section of FAQ_SECTIONS) {
+      const article = section.articles.find((a) => a.id === hash)
+      if (article) {
+        // Ouvrir la section et l'article
+        setOpenSections((p) => ({ ...p, [section.id]: true }))
+        setOpenItems((p) => ({ ...p, [hash]: true }))
+        // Scroll vers l'article après un court délai (rendu)
+        setTimeout(() => {
+          const el = document.getElementById(`faq-${hash}`)
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 150)
+        break
+      }
+    }
+  }, [location.hash])
 
   const filtered = useMemo(() => {
     if (!search.trim()) return FAQ_SECTIONS

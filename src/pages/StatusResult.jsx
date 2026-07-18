@@ -366,8 +366,8 @@ function SingleResult({ act, actType, locationState }) {
               value={fmt(act?.dateNaissance ?? act?.deathDate ?? act?.dateDeces)} />
             <InfoRow icon={MapPin}    label="Lieu"
               value={act?.lieuNaissance ?? act?.deathPlace ?? act?.lieuDeces} />
-            <InfoRow icon={Building2} label="Centre d'état civil"
-              value={lieu} />
+            <InfoRow icon={Building2} label="Mairie ayant établi l'acte"
+              value={lieu ? `Mairie de ${lieu}` : null} />
             <InfoRow icon={Calendar}  label="Date d'établissement de l'acte"
               value={fmt(act?.dateEtablissement ?? act?.createdAt)} highlight />
           </div>

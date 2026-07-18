@@ -195,12 +195,13 @@ export default function QuestionWidget() {
                               <p className="text-xs leading-relaxed text-ink-600 line-clamp-3">
                                 {article.answer.replace(/[📌⚠•]/g, '').replace(/\n/g, ' ').slice(0, 160)}…
                               </p>
-                              <button
-                                onClick={goToFAQ}
-                                className="mt-2 flex items-center gap-1 text-xs font-semibold text-teal-600 hover:underline cursor-pointer"
+                              <Link
+                                to={`/faq#${article.id}`}
+                                onClick={() => setOpen(false)}
+                                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-teal-600 hover:underline cursor-pointer"
                               >
                                 Lire la réponse complète <ChevronRight className="h-3 w-3" />
-                              </button>
+                              </Link>
                             </div>
                           ))}
                         </div>
