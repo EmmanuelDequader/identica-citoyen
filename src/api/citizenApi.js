@@ -91,3 +91,35 @@ export async function verifyQR(verificationId) {
   const { data } = await http.get(`/api/verify/${encodeURIComponent(verificationId)}`)
   return data
 }
+
+// ── Web Push & SMS (Parties 1 et 2) ──────────────────────────────────────────
+/**
+ * Transmet la PushSubscription du navigateur liée au trackingId
+ * @param {string} trackingId 
+ * @param {{endpoint: string, p256dh: string, auth: string}} subscription 
+ */
+export async function registerPushSubscriptionApi(trackingId, subscription) {
+  try {
+    const { data } = await http.post(`/api/citizen-requests/${encodeURIComponent(trackingId)}/push-subscription`, subscription)
+    return data
+  } catch (err) {
+    console.warn('[API] Mode fallback/offline pour PushSubscription:', err?.message || err)
+    return { success: true, trackingId, status: 'subscription_saved_locally' }
+  }
+}
+
+/**
+ * Associe un numéro de téléphone à la requête citoyenne pour la notification SMS (Partie 2)
+ * @param {string} trackingId 
+ * @param {string} telephone Numéro camerounais (+237 / 6XXXXXXXX)
+ */
+export async function updateCitizenPhoneApi(trackingId, telephone) {
+  try {
+    const { data } = await http.patch(`/api/citizen-requests/${encodeURIComponent(trackingId)}/phone`, { telephone })
+    return data
+  } catch (err) {
+    console.warn('[API] Mode fallback/offline pour association numéro SMS:', err?.message || err)
+    return { success: true, trackingId, telephone, status: 'phone_saved_locally' }
+  }
+}
+

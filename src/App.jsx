@@ -8,6 +8,8 @@ import FAQ from './pages/FAQ'
 import Contact from './pages/Contact'
 import QuestionWidget from './components/QuestionWidget'
 
+import PwaInstallPrompt from './components/PwaInstallPrompt'
+
 function AppWithWidget() {
   const { pathname } = useLocation()
   const showWidget = pathname !== '/'
@@ -24,6 +26,7 @@ function AppWithWidget() {
         <Route path="*"                element={<Navigate to="/" replace />} />
       </Routes>
       {showWidget && <QuestionWidget />}
+      <PwaInstallPrompt />
     </>
   )
 }

@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import {
   ChevronLeft, CheckCircle2, Clock, XCircle, AlertCircle,
   Baby, HeartCrack, Calendar, MapPin, Hash, User, FileText,
   QrCode, List, Building2, Phone, ChevronDown, ChevronUp,
-  ArrowRight, Info, Printer, Share2, BookOpen,
+  ArrowRight, Info, Printer, Share2, BookOpen, Bell, Zap, X
 } from 'lucide-react'
 import BrandBar from '../components/BrandBar'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
+import NotificationChannelsWidget from '../components/NotificationChannelsWidget'
+import { subscribeToRequestStatus } from '../services/websocketService'
+
 
 // ── Status configuration ──────────────────────────────────────────────────────
 
@@ -460,7 +463,60 @@ export default function StatusResult() {
   const { state } = useLocation()
   const navigate = useNavigate()
 
-  if (!state?.result) {
+  const [currentResult, setCurrentResult] = useState(state?.result || null)
+  const [toastNotice, setToastNotice] = useState(null)
+
+  const isArray = Array.isArray(currentResult)
+  const singleAct = !isArray ? currentResult : null
+
+  // Extraction du trackingId pour le WebSocket et Web Push
+  const trackingId = singleAct?.numeroActe || singleAct?.numero || singleAct?.trackingId || state?.searchedNumero || ''
+
+  // ── Abonnement WebSocket STOMP (Partie 4) ──
+  useEffect(() => {
+    if (!trackingId) return
+
+    const unsubscribe = subscribeToRequestStatus(trackingId, (data) => {
+      // Notification Toast In-App
+      setToastNotice({
+        message: data.message || `Mise à jour du statut : ${data.status}`,
+        status: data.status,
+        timestamp: new Date().toLocaleTimeString('fr-FR'),
+        isSimulated: data.isSimulated,
+      })
+
+      // Mettre à jour l'acte en direct
+      if (singleAct) {
+        setCurrentResult((prev) => ({
+          ...prev,
+          statut: data.status,
+          status: data.status,
+        }))
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [trackingId, singleAct])
+
+  const handleStatusSimulated = (data) => {
+    setToastNotice({
+      message: data.message,
+      status: data.status,
+      timestamp: new Date().toLocaleTimeString('fr-FR'),
+      isSimulated: true,
+    })
+    if (singleAct) {
+      setCurrentResult((prev) => ({
+        ...prev,
+        statut: data.status,
+        status: data.status,
+      }))
+    }
+  }
+
+  if (!currentResult) {
     return (
       <div className="min-h-screen bg-mist-50">
         <BrandBar />
@@ -476,12 +532,37 @@ export default function StatusResult() {
     )
   }
 
-  const { result, actType, searchedNom } = state
-  const isArray = Array.isArray(result)
+  const { actType, searchedNom } = state || {}
 
   return (
-    <div className="min-h-screen bg-mist-50">
+    <div className="min-h-screen bg-mist-50 relative">
       <BrandBar />
+
+      {/* Toast Notification STOMP en direct (In-App) */}
+      {toastNotice && (
+        <div className="fixed top-4 right-4 left-4 sm:left-auto sm:max-w-md z-50 animate-bounce-short">
+          <div className="bg-slate-900/95 backdrop-blur-md border border-emerald-500/40 text-white p-4 rounded-2xl shadow-2xl flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 shrink-0">
+              <Zap className="w-5 h-5 animate-pulse" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-bold tracking-wider uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-md">
+                  Mise à jour en direct {toastNotice.isSimulated ? '(Simulée)' : ''}
+                </span>
+                <span className="text-[10px] text-slate-400">{toastNotice.timestamp}</span>
+              </div>
+              <p className="text-xs font-semibold text-slate-100 mt-1">{toastNotice.message}</p>
+            </div>
+            <button
+              onClick={() => setToastNotice(null)}
+              className="text-slate-400 hover:text-white p-1 rounded-lg"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Hero header */}
       <div className="relative bg-navy-900 pb-16 pt-10 overflow-hidden">
@@ -503,7 +584,7 @@ export default function StatusResult() {
           </div>
           <h1 className="font-display text-2xl font-bold text-white sm:text-3xl">
             {isArray
-              ? `${result.length} résultat(s) pour « ${searchedNom} »`
+              ? `${currentResult.length} résultat(s) pour « ${searchedNom} »`
               : 'Statut de l\'acte'}
           </h1>
           <p className="mt-2 text-sm text-white/40">
@@ -514,10 +595,19 @@ export default function StatusResult() {
         </div>
       </div>
 
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 -mt-8 pb-16">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 -mt-8 pb-16 space-y-6">
         {isArray
-          ? <MultipleResults results={result} actType={actType} />
-          : <SingleResult act={result} actType={actType} locationState={state} />}
+          ? <MultipleResults results={currentResult} actType={actType} />
+          : <SingleResult act={currentResult} actType={actType} locationState={state} />}
+
+        {/* Widget des canaux de notification Web Push et SMS */}
+        {!isArray && trackingId && (
+          <NotificationChannelsWidget
+            trackingId={trackingId}
+            currentStatus={singleAct?.statut || singleAct?.status || 'pending'}
+            onStatusSimulated={handleStatusSimulated}
+          />
+        )}
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Button variant="ghost" onClick={() => navigate('/statut')} noShadow>
@@ -538,3 +628,4 @@ export default function StatusResult() {
     </div>
   )
 }
+
