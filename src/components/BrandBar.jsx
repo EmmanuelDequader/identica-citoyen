@@ -28,7 +28,7 @@ export default function BrandBar() {
 
         {/* Logo — officiel IDENTICA */}
         <Link to="/accueil" className="flex items-center gap-2.5 no-underline">
-          <img src="/favicon.svg" alt="IDENTICA Logo" className="h-9 w-9 rounded-xl shadow-sm" />
+          <img src="/pwa-192x192.png" alt="IDENTICA Logo" className="h-9 w-9 rounded-xl shadow-sm object-cover" />
           <div className="flex flex-col leading-none">
             <span className="font-display text-[15px] font-bold tracking-tight text-navy-900">
               IDENTICA

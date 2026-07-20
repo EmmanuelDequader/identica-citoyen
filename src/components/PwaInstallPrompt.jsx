@@ -75,7 +75,7 @@ export default function PwaInstallPrompt() {
       <div className="bg-[#09172c]/95 backdrop-blur-md text-white border border-[#1c2f4c] rounded-2xl p-4 shadow-2xl flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <img src="/favicon.svg" alt="IDENTICA Logo" className="w-11 h-11 rounded-xl border border-[#00e58b]/30 shrink-0 shadow-md" />
+            <img src="/pwa-192x192.png" alt="IDENTICA Logo" className="w-11 h-11 rounded-xl border border-[#00e58b]/30 shrink-0 shadow-md object-cover" />
             <div>
               <h4 className="font-semibold text-sm text-slate-100 flex items-center gap-1.5">
                 Installer IDENTICA sur votre {isIos ? 'iPhone' : 'appareil'}
