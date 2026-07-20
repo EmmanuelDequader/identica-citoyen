@@ -26,11 +26,9 @@ export default function BrandBar() {
     <header className="sticky top-0 z-50 w-full border-b border-mist-100 bg-white/95 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 sm:px-6">
 
-        {/* Logo — identique à identica-front */}
+        {/* Logo — officiel IDENTICA */}
         <Link to="/accueil" className="flex items-center gap-2.5 no-underline">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-navy-900">
-            <Fingerprint className="h-5 w-5 text-teal-400" strokeWidth={1.8} />
-          </div>
+          <img src="/favicon.svg" alt="IDENTICA Logo" className="h-9 w-9 rounded-xl shadow-sm" />
           <div className="flex flex-col leading-none">
             <span className="font-display text-[15px] font-bold tracking-tight text-navy-900">
               IDENTICA

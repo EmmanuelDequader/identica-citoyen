@@ -1,7 +1,7 @@
 {
   "short_name": "IDENTICA",
   "name": "IDENTICA — Portail Citoyen du Registre Civil",
-  "description": "Portail numérique citoyen de suivi du registre civil pour le Cameroun. Suivez vos requêtes d'actes d'état civil en temps réel et recevez des notifications Web Push & SMS.",
+  "description": "Portail numérique citoyen de suivi du registre civil pour le Cameroun. Suivez vos actes d'état civil en temps réel et recevez des notifications.",
   "icons": [
     {
       "src": "/pwa-192x192.svg",
@@ -21,5 +21,8 @@
   "theme_color": "#0c2551",
   "display": "standalone",
   "orientation": "portrait",
-  "categories": ["government", "utilities"]
+  "categories": [
+    "government",
+    "utilities"
+  ]
 }

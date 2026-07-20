@@ -1,7 +1,11 @@
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
-// Fallback du service WS si variable d'environnement absente
+// Polyfill global si nécessaire
+if (typeof window !== 'undefined' && !window.global) {
+  window.global = window
+}
+
 const WS_ENDPOINT = import.meta.env.VITE_WS_URL || 'https://identica.duckdns.org/ws-notify'
 
 /**
@@ -18,8 +22,15 @@ export function subscribeToRequestStatus(trackingId, onMessage) {
 
   try {
     stompClient = new Client({
-      webSocketFactory: () => new SockJS(WS_ENDPOINT),
-      reconnectDelay: 5000, // Reconnexion automatique toutes les 5s si coupure
+      webSocketFactory: () => {
+        try {
+          return new SockJS(WS_ENDPOINT)
+        } catch (err) {
+          const rawWsUrl = WS_ENDPOINT.replace(/^http/, 'ws')
+          return new WebSocket(rawWsUrl)
+        }
+      },
+      reconnectDelay: 5000,
       debug: (msg) => {
         if (import.meta.env.DEV) {
           console.log('[STOMP Citoyen]', msg)
@@ -39,7 +50,7 @@ export function subscribeToRequestStatus(trackingId, onMessage) {
         })
       },
       onStompError: (frame) => {
-        console.warn('[WebSocket] Erreur STOMP:', frame.headers['message'])
+        console.warn('[WebSocket] Erreur STOMP:', frame?.headers?.['message'])
       },
       onWebSocketClose: () => {
         if (isConnected) {
@@ -54,7 +65,6 @@ export function subscribeToRequestStatus(trackingId, onMessage) {
     console.warn('[WebSocket] Erreur lors de l\'initialisation STOMP:', err)
   }
 
-  // Fonction de nettoyage
   return () => {
     if (stompClient) {
       try {
@@ -73,7 +83,7 @@ export function simulateStatusChange(trackingId, newStatus, onMessage) {
   const statusMessages = {
     'EN_TRAITEMENT': 'Votre dossier est en cours d\'examen par l\'officier d\'état civil.',
     'VALIDE': 'Votre acte a été validé et est en cours de signature numérique.',
-    'PRET': 'Votre document officiel est prêt et téléchargeable !',
+    'PRET': 'Votre document officiel me prêt et téléchargeable !',
     'REJETE': 'Des informations complémentaires sont requises pour valider votre dossier.',
   }
 
